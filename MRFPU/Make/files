@@ -1,0 +1,5 @@
+MRFZonePU.C
+MRFZoneListPU.C
+IOMRFZoneListPU.C
+
+LIB = $(FOAM_USER_LIBBIN)/libMRFPU
