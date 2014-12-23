@@ -71,7 +71,7 @@ Foam::kineticTheoryModels::GarzoDuftyViscosity::mua
 {
     //_AO_09/01/2014 Eq.8 p.4
     volScalarField etakstar = 
-      1.0-2.0/5.0*(1.0 + e)*(1.0 - 3.0*e)*alpha*g0
+     (1.0-2.0/5.0*(1.0 + e)*(1.0 - 3.0*e)*alpha*g0)
     /(1.0-0.25*(1.0-e)*(1.0-e)-5.0/24.0*(1.0-e)*(1.0-e))*g0;
 
     return 

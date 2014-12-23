@@ -1,0 +1,4 @@
+LOCAL_OBJECTS = \
+MRFZonePU.o\
+MRFZoneListPU.o\
+IOMRFZoneListPU.o

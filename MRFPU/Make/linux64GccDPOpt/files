@@ -1,0 +1,8 @@
+# 1 "files"
+# 1 "<command-line>"
+# 1 "files"
+MRFZonePU.C
+MRFZoneListPU.C
+IOMRFZoneListPU.C
+
+LIB = $(FOAM_USER_LIBBIN)/libMRFPU
