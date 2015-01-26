@@ -28,4 +28,5 @@ $(OBJECTS_DIR)/GarzoDuftyPressure.o\
 $(OBJECTS_DIR)/frictionalStressModel.o\
 $(OBJECTS_DIR)/newFrictionalStressModel.o\
 $(OBJECTS_DIR)/JohnsonJacksonFrictionalStress.o\
-$(OBJECTS_DIR)/SchaefferFrictionalStress.o
+$(OBJECTS_DIR)/SchaefferFrictionalStress.o\
+$(OBJECTS_DIR)/ChialvoSundaresanFrictionalStress.o

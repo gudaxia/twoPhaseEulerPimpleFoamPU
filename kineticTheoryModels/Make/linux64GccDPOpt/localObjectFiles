@@ -28,4 +28,5 @@ GarzoDuftyPressure.o\
 frictionalStressModel.o\
 newFrictionalStressModel.o\
 JohnsonJacksonFrictionalStress.o\
-SchaefferFrictionalStress.o
+SchaefferFrictionalStress.o\
+ChialvoSundaresanFrictionalStress.o

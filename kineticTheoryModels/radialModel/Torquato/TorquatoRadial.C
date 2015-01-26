@@ -105,24 +105,37 @@ Foam::kineticTheoryModels::radialModels::Torquato::g0jamming
     const scalar& alpha_c
 ) const
 {
-    
+    //autoPtr<volScalarField> valg0; 
     const scalar constSMALL = 1.e-06;
-    volScalarField valg0(alpha);
-    
+    volScalarField valg0
+    (
+        IOobject
+        (
+            "valg0",
+            mesh.time().path(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh
+	//zeroGradientFvPatchScalarField::typeName 
+    );
+ //  valg0 = alpha;
+ 
     forAll(mesh.cells(),ii)
     {
-	if( alpha[ii] <= alpha_f )
+	if( valg0[ii] <= alpha_f )
 	{
-	   valg0[ii] =   (1.0 - alpha[ii]/2.) / (pow(1.0 - alpha[ii], 3));
+	   valg0[ii] = (1.0 - alpha[ii]/2.) / (pow(1.0 - alpha[ii], 3));
 	}else
 	{
-	   valg0[ii] =   (1.0 - alpha[ii]/2.) / (pow(1.0 - alpha[ii], 3))
+	   valg0[ii] = (1.0 - alpha[ii]/2.) / (pow(1.0 - alpha[ii], 3))
 	               * (alpha_c - alpha_f)
 		       / (alpha_c - alpha[ii] + constSMALL ) ;    
 	}
     }
-
-    return  valg0;
+  
+      return valg0;
 }
 
 Foam::tmp<Foam::volScalarField>

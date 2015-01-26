@@ -28,4 +28,5 @@ granularPressureModel/GarzoDufty/GarzoDuftyPressure.dep\
 frictionalStressModel/frictionalStressModel/frictionalStressModel.dep\
 frictionalStressModel/frictionalStressModel/newFrictionalStressModel.dep\
 frictionalStressModel/JohnsonJackson/JohnsonJacksonFrictionalStress.dep\
-frictionalStressModel/Schaeffer/SchaefferFrictionalStress.dep
+frictionalStressModel/Schaeffer/SchaefferFrictionalStress.dep\
+frictionalStressModel/ChialvoSundaresan/ChialvoSundaresanFrictionalStress.dep
