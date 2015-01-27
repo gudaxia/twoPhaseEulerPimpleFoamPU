@@ -557,6 +557,10 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      dimensionedScalar mu1Dim("zero", dimensionSet(1, -1, -1, 0, 0), 1.0);     
      mua_ = mu1Dim * viscosityModel_->mua(alpha_, Theta_, gs0_, rhoa_, da_, e_);
 
+     // Limit mua
+     mua_.min(1.e+02);
+     mua_.max(0.0);
+     
      Info<< "kinTheory: min(mua) = " << min(mua_).value()
          << ", max(mua) = "          << max(mua_).value() << endl;
 
@@ -569,10 +573,6 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      
      Info<< "kinTheory: min(lamdba) = " << min(lambda_).value()
          << ", max(lamdba) = "          << max(lambda_).value() << endl;
-
-     // Limit mua
-     mua_.min(1.e+02);
-     mua_.max(0.0);
      
      // J Eq.5, p3     
      volScalarField J_( 5.0 * sqrtPi / 96.0 *( mua_ + lambda_ ) /( mu1Dim ) ); // Dimension issue ( mu1Dim )
@@ -620,11 +620,14 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
          << ", max(ThetaDil) = "            << max(ThetaDil_).value() << endl;
 
      // Dense inertia temperature Eq.27, p8    
-   // Commented out by YG (dilute)   volScalarField ThetaDense_ =   const_alpha1 * ( gammaDot * da_ ) * ( gammaDot * da_ )
-   // Commented out by YG (dilute)                                / sqrt( max(alphac_ - alpha_, constSMALL) ); 
+     // Commented out by YG (dilute)   
+     volScalarField ThetaDense_ =   const_alpha1 * ( gammaDot * da_ ) * ( gammaDot * da_ )
+                                  / sqrt( max(alphac_ - alpha_, constSMALL) ); 
 
-   // Commented out by YG (dilute)   Info<< "kinTheory: min(ThetaDense) = " << min(ThetaDense_).value()
-    // Commented out by YG (dilute)      << ", max(ThetaDense) = "          << max(ThetaDense_).value() << endl;	
+     // Commented out by YG (dilute)   
+     Info<< "kinTheory: min(ThetaDense) = " << min(ThetaDense_).value()
+     // Commented out by YG (dilute)      
+      << ", max(ThetaDense) = "          << max(ThetaDense_).value() << endl;	
 
      // Following equations for transport of equation of temperature
      // grad(Us)
@@ -660,13 +663,13 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 	 
      // Shear stress ratio in dilute regime, Eq.33, p.12
      dimensionedScalar paSmall("paSmall",dimensionSet(1, -1, -2, 0, 0), constSMALL);    
-    volScalarField inertiaNumber( gammaDot * da_ / sqrt( (pa_ + paSmall) / rhoa_ ) );
+     volScalarField inertiaNumber( gammaDot * da_ / sqrt( (pa_ + paSmall) / rhoa_ ) );
      
      Info<< "kinTheory: min(InertiaNumber) = " << min(inertiaNumber).value()
        << ", max(InertiaNumber) = "          << max(inertiaNumber).value() << endl;	
 
      // Modified inertia number Eq.35, p.13
-   volScalarField modInertiaNumber( inertiaNumber /  max( alpha_, constSMALL ) ); 
+     volScalarField modInertiaNumber( inertiaNumber /  max( alpha_, constSMALL ) ); 
      
      Info<< "kinTheory: min(modInertiaNumber) = " << min(modInertiaNumber).value()
          << ", max(modInertiaNumber) = "          << max(modInertiaNumber).value() << endl;
@@ -689,10 +692,10 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
         << ", max(sigmaTau) = "          << max(sigmaTau).value() << endl;
 	 
      // Sigma_gamma Eq.51 p.14
-    volScalarField sigmaGamma( beta * sqrt( PsCoeff/rhoa_ ) / max( ( Kmod_ * M_ ), constSMALL ) * sigmaTau);
+     volScalarField sigmaGamma( beta * sqrt( PsCoeff/rhoa_ ) / max( ( Kmod_ * M_ ), constSMALL ) * sigmaTau);
 
-  Info<< "kinTheory: min(sigmaGamma) = " << min(sigmaGamma).value()
-    << ", max(sigmaGamma) = "          << max(sigmaGamma).value() << endl;
+     Info<< "kinTheory: min(sigmaGamma) = " << min(sigmaGamma).value()
+     << ", max(sigmaGamma) = "          << max(sigmaGamma).value() << endl;
 
      // dissipation
      volScalarField gammaCoeff
@@ -734,8 +737,9 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      }else
      {
 	// Theta
-// Commented out by YG (dilute)  	Theta_ = max(ThetaDil_,ThetaDense_) ;
-    Theta_ = ThetaDil_;
+// Commented out by YG (dilute)  	
+     	Theta_ = max(ThetaDil_,ThetaDense_) ;
+    //Theta_ = ThetaDil_;
      }
 
      // Limit granular temperature
@@ -761,14 +765,19 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      pa_ = PsCoeff * Theta_;
 
      // Blending function    
-     // Commented out by YG (dilute)    volScalarField func_B( const_alpha + ( beta-const_alpha ) * chi );
+     // Commented out by YG (dilute)    
+     volScalarField func_B( const_alpha + ( beta-const_alpha ) * chi );
 
-    // Commented out by YG (dilute)   Info<< "kinTheory: min(func_B) = " << min(func_B).value()
-    // Commented out by YG (dilute)       << ", max(func_B) = "          << max(func_B).value() << endl;
+    // Commented out by YG (dilute)   
+     Info << "kinTheory: min(func_B) = " << min(func_B).value()
+    // Commented out by YG (dilute)       
+          << ", max(func_B) = "          << max(func_B).value() << endl;
 	 
      // Shear stress ratio
-  // Commented out by YG (dilute)       upsilon_ = upsilons_ * (1 - chi) + func_B * modInertiaNumber;
-      upsilon_ = alpha_ * psi  * J_ * sqrt( K_ /( max ( (Kmod_ * ( PsCoeff / rhoa_)), constSMALL ) ) ) * modInertiaNumber;
+     // Commented out by YG (dilute)  
+     upsilon_ = upsilons_ * (1 - chi) + func_B * modInertiaNumber;
+
+     //upsilon_ = alpha_ * psi  * J_ * sqrt( K_ /( max ( (Kmod_ * ( PsCoeff / rhoa_)), constSMALL ) ) ) * modInertiaNumber;
      // Limit shear stress ratio
      //upsilon_.min(1.e-06);
 
@@ -784,12 +793,6 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 	 
      // Shear stress based on pressure and ratio	 
      tau_ = pa_ * upsilon_ * hatS;
-
-    
-     // Limit mua
-     //mua_.min(1.e+02);
-     //mua_.max(0.0);
-     
      
      volScalarField ktn(mua_/rhoa_);
 

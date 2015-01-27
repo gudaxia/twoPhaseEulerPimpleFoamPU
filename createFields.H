@@ -206,9 +206,9 @@
             "rUaAf",
             runTime.timeName(),
             mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
+            IOobject::READ_IF_PRESENT, 	// NO_READ,
+            IOobject::AUTO_WRITE	// NO_WRITE
+	),
         mesh,
         dimensionedScalar("zero", dimensionSet(0, 0, 1, 0, 0), 0.0)
     );
@@ -221,7 +221,7 @@
             runTime.timeName(),
             mesh,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE        // NO_WRITE
         ),
         mesh,
         dimensionedScalar("zero", dimensionSet(0, 2, -1, 0, 0), 0.0)
@@ -234,8 +234,8 @@
             "ppMagfUEqn",
             runTime.timeName(),
             mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::READ_IF_PRESENT,  // NO_READ,
+            IOobject::AUTO_WRITE        // NO_WRITE
         ),
         mesh,
         dimensionedScalar("zero", dimensionSet(0, 2, -2, 0, 0), 0.0)
