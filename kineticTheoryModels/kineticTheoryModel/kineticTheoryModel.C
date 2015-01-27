@@ -555,7 +555,8 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      // If Garzo-Dufty viscosity is used (viscosity is dimensionless), there is issue with dimension of mu1
      // Create dimensionedScalar
      dimensionedScalar mu1Dim("zero", dimensionSet(1, -1, -1, 0, 0), 1.0);     
-     mua_ = mu1Dim * viscosityModel_->mua(alpha_, Theta_, gs0_, rhoa_, da_, e_);
+     // mua_ = mu1Dim * viscosityModel_->mua(alpha_, Theta_, gs0_, rhoa_, da_, e_);
+     mua_ = viscosityModel_->mua(alpha_, Theta_, gs0_, rhoa_, da_, e_);	
 
      // Limit mua
      mua_.min(1.e+02);
