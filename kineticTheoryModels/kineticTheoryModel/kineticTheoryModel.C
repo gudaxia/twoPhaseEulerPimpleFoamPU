@@ -680,7 +680,6 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 	 
      // Model parameters     Theta_.max(1.0e-15);
      volScalarField chi( 1.0 / ( pow( I0 / max( modInertiaNumber,constSMALL ) , 1.5 ) + 1.0 ));
-     if(diluteCorrection) volScalarField chi( modInertiaNumber /  modInertiaNumber ); // equal to 1 
      Info<< "kinTheory: min(chi) = " << min(chi).value()
          << ", max(chi) = "          << max(chi).value() << endl;
 
