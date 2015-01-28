@@ -662,7 +662,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 
      // Psi Eq.32, p.12
      dimensionedScalar psi(1.0 + 3.0/10.0*pow((1.0-e_*e_),-1.5)*(1.0-exp(-8.0*muFric_)));
-     if(diluteCorrection) dimensionedScalar psi(1.0);
+     if(diluteCorrection) psi = 1.0;
      Info<< "kinTheory: psi = " << psi.value() << endl;
 	 
      // Shear stress ratio in dilute regime, Eq.33, p.12
