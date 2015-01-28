@@ -797,6 +797,9 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      // Limit mua
      mua_.min(1.e+02);
      mua_.max(0.0);
+	
+    // Limit shear stress
+    tau_ = mua_ * gammaDot * hatS;
      
      volScalarField ktn(mua_/rhoa_);
 
