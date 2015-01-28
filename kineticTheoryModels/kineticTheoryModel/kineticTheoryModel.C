@@ -492,12 +492,20 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      Info << " " << endl;
      Info << "Modified kinetic theory model - Chialvo-Sundaresan " << endl;
 
-     bool diluteCorrection(false);
-     if(kineticTheoryProperties_.found("diluteCorrection")) 
+     bool testMKTimp(false);
+     if(kineticTheoryProperties_.found("testMKTimp")) 
      {
+	testMKTimp = true;
+        Info << "Modified kinetic theory model - testing implementation (chi=1,eEff=e, ksi=1) " << endl;
+     }
+
+     bool diluteCorrection(false);          
+     if(kineticTheoryProperties_.found("testMKTimp")) 
+     {
+	testMKTimp = false;
 	diluteCorrection = true;
         Info << "Modified kinetic theory model - Only dilute correction " << endl;
-     }
+     }    
      const scalar Pi = constant::mathematical::pi;
      const scalar sqrtPi = sqrt(constant::mathematical::pi);
      const scalar constSMALL = 1.e-06;
@@ -509,7 +517,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      muFric_ = readScalar(kineticTheoryProperties_.lookup("muFriction"));
      eEff_ = e_ - 3.0 / 2.0 * muFric_ * exp(-3.0 * muFric_);
      // If only dilute correction
-     if(diluteCorrection) eEff_ = e_;
+     if(testMKTimp) eEff_ = e_;
 
      alphaf_ = readScalar(kineticTheoryProperties_.lookup("alphaDiluteInertialUpperLimit"));
      alphac_ = readScalar(kineticTheoryProperties_.lookup("alphaCritical"));
@@ -629,9 +637,19 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      volScalarField ThetaDense_ =   const_alpha1 * ( gammaDot * da_ ) * ( gammaDot * da_ )
                                   / sqrt( max(alphac_ - alpha_, constSMALL) ); 
 
-     // Commented out by YG (dilute)   
      Info<< "kinTheory: min(ThetaDense) = " << min(ThetaDense_).value()
       << ", max(ThetaDense) = "          << max(ThetaDense_).value() << endl;	
+
+     // Theta
+     Theta_ = max(ThetaDil_,ThetaDense_) ;
+     if(testMKTimp || diluteCorrection) Theta_ = ThetaDil_;
+     
+     // Limit granular temperature
+     Theta_.max(1.0e-15);
+     Theta_.min(1.0e+3);
+
+     // update particle pressure
+     pa_ = PsCoeff * Theta_;
 
      // Following equations for transport of equation of temperature
      // grad(Us)
@@ -662,8 +680,9 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 
      // Psi Eq.32, p.12
      dimensionedScalar psi(1.0 + 3.0/10.0*pow((1.0-e_*e_),-1.5)*(1.0-exp(-8.0*muFric_)));
-     if(diluteCorrection) psi = 1.0;
+     if(testMKTimp) psi = 1.0;
      Info<< "kinTheory: psi = " << psi.value() << endl;
+
 	 
      // Shear stress ratio in dilute regime, Eq.33, p.12
      dimensionedScalar paSmall("paSmall",dimensionSet(1, -1, -2, 0, 0), constSMALL);    
@@ -680,7 +699,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 	 
      // Model parameters    
      volScalarField chi( 1.0 / ( pow( I0 / max( modInertiaNumber,constSMALL ) , 1.5 ) + 1.0 ));
-     if(diluteCorrection) volScalarField chi( max( modInertiaNumber,constSMALL ) / max( modInertiaNumber,constSMALL ) );
+     if(testMKTimp || diluteCorrection) volScalarField chi( max( modInertiaNumber,constSMALL ) / max( modInertiaNumber,constSMALL ) );
      Info<< "kinTheory: min(chi) = " << min(chi).value()
          << ", max(chi) = "          << max(chi).value() << endl;
 
@@ -738,19 +757,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 
          ThetaEqn.relax();
          ThetaEqn.solve();
-     }else
-     {
-	// Theta
-     	Theta_ = max(ThetaDil_,ThetaDense_) ;
-        if(diluteCorrection) Theta_ = ThetaDil_;
      }
-
-     // Limit granular temperature
-     Theta_.max(1.0e-15);
-     Theta_.min(1.0e+3);
-
-     // update particle pressure
-     pa_ = PsCoeff * Theta_;
 
      // Blending function    
      volScalarField func_B( const_alpha + ( beta-const_alpha ) * chi );
