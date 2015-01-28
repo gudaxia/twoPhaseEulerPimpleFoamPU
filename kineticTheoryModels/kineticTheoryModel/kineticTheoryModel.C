@@ -557,10 +557,6 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      dimensionedScalar mu1Dim("zero", dimensionSet(1, -1, -1, 0, 0), 1.0);     
      // mua_ = mu1Dim * viscosityModel_->mua(alpha_, Theta_, gs0_, rhoa_, da_, e_);
      mua_ = viscosityModel_->mua(alpha_, Theta_, gs0_, rhoa_, da_, e_);	
-
-     // Limit mua
-     mua_.min(1.e+02);
-     mua_.max(0.0);
      
      Info<< "kinTheory: min(mua) = " << min(mua_).value()
          << ", max(mua) = "          << max(mua_).value() << endl;
@@ -597,7 +593,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      // M Eq.30 p.9
 	volScalarField M_( max( J_ / max( Kmod_, KmodSmall) , const_alpha1 / sqrt( max(alphac_ - alpha_, constSMALL) ) ) ); 
 
-  Info<< "kinTheory: min(M) = " << min(M_).value()
+     Info<< "kinTheory: min(M) = " << min(M_).value()
      << ", max(M) = "          << max(M_).value() << endl;
 
      // Shear stress rate tensor
@@ -794,6 +790,13 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 	 
      // Shear stress based on pressure and ratio	 
      tau_ = pa_ * upsilon_ * hatS;
+   
+     // Viscosity
+     mua_ = ( pa_ * upsilon_ ) / (max( gammaDot, gammaDotSmall )) ; 	
+
+     // Limit mua
+     mua_.min(1.e+02);
+     mua_.max(0.0);
      
      volScalarField ktn(mua_/rhoa_);
 

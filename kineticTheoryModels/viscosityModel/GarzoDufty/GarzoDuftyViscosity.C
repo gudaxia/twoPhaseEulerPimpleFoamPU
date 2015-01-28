@@ -70,15 +70,17 @@ Foam::kineticTheoryModels::GarzoDuftyViscosity::mua
 ) const
 {
     //_AO_09/01/2014 Eq.8 p.4
-//    dimensionedScalar mu1Dim("zero", dimensionSet(1, -1, -1, 0, 0), 1.0);
-    const scalar sqrtPi = sqrt(constant::mathematical::pi);
+    dimensionedScalar mu1Dim("zero", dimensionSet(1, -1, -1, 0, 0), 1.0);
+//    const scalar sqrtPi = sqrt(constant::mathematical::pi);
 
     volScalarField etakstar = 
      (1.0-2.0/5.0*(1.0 + e)*(1.0 - 3.0*e)*alpha*g0)
     /((1.0-0.25*(1.0-e)*(1.0-e)-5.0/24.0*(1.0-e)*(1.0-e))*g0);
 
-    return  rhoa*da*sqrt(Theta) * 5.*sqrtPi/96.
-          * (1.0 + 4.0/5.0*(1.0+e)*alpha*g0)*etakstar;
+//    return  rhoa*da*sqrt(Theta) * 5.*sqrtPi/96.
+//          * (1.0 + 4.0/5.0*(1.0+e)*alpha*g0)*etakstar;
+     return 
+     mu1Dim * (1.0 + 4.0/5.0*(1.0+e)*alpha*g0)*etakstar;	
 }
 
 
