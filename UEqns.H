@@ -116,9 +116,9 @@
 	      - ppMagfUEqn*fvc::snGrad(alpha)*mesh.magSf()
 	      + fvc::interpolate(beta/rhoa*K)*phib 
 	    ),
-            mesh.solver(Ua.select(finalIter))  // Selecting linear solver settings 
+       	    mesh.solver(Ua.select(finalIter))  // Selecting linear solver settings 
 	);
-
+	
 	solve
 	(
 	    UbEqn() 

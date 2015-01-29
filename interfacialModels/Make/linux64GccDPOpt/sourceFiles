@@ -7,4 +7,5 @@ dragModels/GidaspowSchillerNaumann/GidaspowSchillerNaumann.C\
 dragModels/SchillerNaumann/SchillerNaumann.C\
 dragModels/Gibilaro/Gibilaro.C\
 dragModels/WenYu/WenYu.C\
-dragModels/SyamlalOBrien/SyamlalOBrien.C
+dragModels/SyamlalOBrien/SyamlalOBrien.C\
+dragModels/noDrag/noDrag.C

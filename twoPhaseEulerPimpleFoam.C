@@ -81,11 +81,11 @@ int main(int argc, char *argv[])
 	    {
 		p.storePrevIter();
 	    }
-
+	    
 	    #include "alphaEqn.H"
 
 	    #include "liftDragCoeffs.H"
-
+	    	    
 	    #include "UEqns.H"
 
 	    // --- PISO loop
@@ -99,9 +99,9 @@ int main(int argc, char *argv[])
 		}
 	    }
 
-	    #include "DDtU.H"
+		    #include "DDtU.H"
 
-	    #include "kEpsilon.H"
+		    #include "kEpsilon.H"
 	}
 
         #include "write.H"

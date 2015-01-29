@@ -500,7 +500,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      }
 
      bool diluteCorrection(false);          
-     if(kineticTheoryProperties_.found("testMKTimp")) 
+     if(kineticTheoryProperties_.found("diluteCorrection")) 
      {
 	testMKTimp = false;
 	diluteCorrection = true;

@@ -7,4 +7,5 @@ $(OBJECTS_DIR)/GidaspowSchillerNaumann.o\
 $(OBJECTS_DIR)/SchillerNaumann.o\
 $(OBJECTS_DIR)/Gibilaro.o\
 $(OBJECTS_DIR)/WenYu.o\
-$(OBJECTS_DIR)/SyamlalOBrien.o
+$(OBJECTS_DIR)/SyamlalOBrien.o\
+$(OBJECTS_DIR)/noDrag.o

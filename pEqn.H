@@ -92,7 +92,7 @@
             p.relax();
             SfGradp = pEqn.flux()/Dp;
 
-            Ua += fvc::reconstruct(phiDraga - rUaAf*SfGradp/rhoa);
+   	    Ua += fvc::reconstruct(phiDraga - rUaAf*SfGradp/rhoa);
             Ua.correctBoundaryConditions();
 
             Ub += fvc::reconstruct(phiDragb - rUbAf*SfGradp/rhob);
