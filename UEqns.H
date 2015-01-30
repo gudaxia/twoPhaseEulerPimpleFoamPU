@@ -26,7 +26,11 @@
     //_AO_09/03/2014 Garzo-Dufty kinetic theory OR modified kinetic theory by Chialvo-Sundaresan
     else if(kineticTheory.PU())
     {
-    	Rca = - ( tensor(I) & kineticTheory.tau() / rhoa ) + nuEffa*fvc::grad(Ua);
+    	Rca = - ( ( kineticTheory.tau() 
+                   / ( rhoa * (fvc::average(alpha) + scalar(0.001)) ) 
+                  ) & tensor(I) 
+                )
+              + nuEffa*fvc::grad(Ua);
     }
 
     surfaceScalarField phiRa =
