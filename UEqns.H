@@ -28,7 +28,7 @@
     {
     	Rca = - ( ( kineticTheory.tau() 
                    / ( rhoa 
-                      * (alpha + scalar(0.001)) 
+                      * (fvc::average(alpha) + scalar(0.001)) 
                      ) 
                   ) & tensor(I) 
                 )

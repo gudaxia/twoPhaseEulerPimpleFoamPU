@@ -608,6 +608,7 @@ kineticTheoryModel/kineticTheoryModel.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnIncl
 kineticTheoryModel/kineticTheoryModel.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/timeSelector.H
 kineticTheoryModel/kineticTheoryModel.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/scalarRanges.H
 kineticTheoryModel/kineticTheoryModel.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/scalarRange.H
+kineticTheoryModel/kineticTheoryModel.dep: kineticTheoryModel/verboseMKT.H
 $(OBJECTS_DIR)/kineticTheoryModel.o: $(EXE_DEP)
 $(OBJECTS_DIR)/kineticTheoryModel.o:
 	@SOURCE_DIR=kineticTheoryModel
