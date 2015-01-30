@@ -27,10 +27,13 @@
     else if(kineticTheory.PU())
     {
     	Rca = - ( ( kineticTheory.tau() 
-                   / ( rhoa * (fvc::average(alpha) + scalar(0.001)) ) 
+                   / ( rhoa 
+                      * (alpha + scalar(0.001)) 
+                     ) 
                   ) & tensor(I) 
                 )
-              + nuEffa*fvc::grad(Ua);
+              + nuEffa*fvc::grad(Ua)
+              - I*nuEffa*tr(gradUaT); 
     }
 
     surfaceScalarField phiRa =
