@@ -621,7 +621,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
          << ", max(D) = "          << max(D).value() << endl;
      
      // Shear stress rate (gammaDot)
-     volScalarField gammaDot(sqrt(magSqr(D)));
+     volScalarField gammaDot(sqrt(2.*magSqr(D)));
      dimensionedScalar gammaDotSmall("gammaDotSmall",dimensionSet(0 , 0 , -1 , 0 , 0, 0, 0), constSMALL);    
 
      Info<< "kinTheory: min(gammadot) = " << min(gammaDot).value()
@@ -770,7 +770,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 
      // Shear stress
      volSymmTensorField S( D - 1./3.*tr(D)*I );    
-     volSymmTensorField hatS( S / max( gammaDot, gammaDotSmall ) );
+     volSymmTensorField hatS( 2. * S / max( gammaDot, gammaDotSmall ) );
 
      Info<< "kinTheory: min(S) = " << min(S).value()
          << ", max(S) = "          << max(S).value() << endl;
