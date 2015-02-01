@@ -33,7 +33,8 @@
                   ) & tensor(I) 
                 )
               + nuEffa*fvc::grad(Ua)
-              - I*nuEffa*tr(gradUaT); 
+              //- I*nuEffa*tr(gradUaT); 
+              - ((2.0/3.0)*I)*nuEffa*tr(gradUaT);
     }
 
     surfaceScalarField phiRa =
