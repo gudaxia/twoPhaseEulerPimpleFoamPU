@@ -19,6 +19,3 @@
 
     Switch correctAlpha(pimple.lookup("correctAlpha"));
 
-//-AO- 01/28/2015
-
-    Switch onlySolid(pimple.lookup("onlySolid"));
