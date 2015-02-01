@@ -218,7 +218,7 @@ Foam::kineticTheoryModel::kineticTheoryModel
             Ua_.time().timeName(),
             Ua_.mesh(),
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         Ua_.mesh(),
         dimensionedScalar("zero", dimensionSet(0, 0, 0, 0, 0), 0.0)
@@ -234,7 +234,7 @@ Foam::kineticTheoryModel::kineticTheoryModel
             Ua_.time().timeName(),
             Ua_.mesh(),
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         Ua_.mesh(),
         dimensionedSymmTensor("zero", dimensionSet(1, -1, -2, 0, 0), symmTensor(0,0,0,0,0,0))
