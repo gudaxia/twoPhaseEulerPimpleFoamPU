@@ -77,8 +77,8 @@
      Info<< "kinTheory: min(Theta) = "   << min(Theta_).value()
          << ", max(Theta) = "           << max(Theta_).value() << endl;
 
-     Info<< "kinTheory: min(pa) = " << min(pa_).value()
-         << ", max(pa) = "          << max(pa_).value() << endl; 
+     Info<< "kinTheory: min(pa) = " << min(alpha_*pa_).value()
+         << ", max(pa) = "          << max(alpha_*pa_).value() << endl; 
       
      Info<< "kinTheory: min(tau) = " << min(tau_).value()
          << ", max(tau) = "          << max(tau_).value() << endl;

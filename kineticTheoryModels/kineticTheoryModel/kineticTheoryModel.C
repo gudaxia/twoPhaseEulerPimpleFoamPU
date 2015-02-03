@@ -663,7 +663,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      
      // Divide by alpha (to be consistent with OpenFOAM implementation)
      mua_ /= (fvc::average(alpha_) + scalar(0.001)); // max(alpha_, scalar(constSMALL));
-     tau_ /= (fvc::average(alpha_) + scalar(0.001)); //max(alpha_, scalar(constSMALL));
+     tau_ /= (fvc::average(alpha_) + scalar(0.001)); // max(alpha_, scalar(constSMALL));
      
      if(verboseMKT)
      {
