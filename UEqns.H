@@ -5,7 +5,7 @@
     if (kineticTheory.on() || kineticTheory.PU())
     {
 	kineticTheory.solve(gradUaT);
-	nuEffa = kineticTheory.mua()/rhoa;
+	nuEffa = kineticTheory.mua()/rhoa/(fvc::average(alpha) + scalar(0.001)) ;
     }
     else // If not using kinetic theory is using Ct model
     {
@@ -33,8 +33,8 @@
                   ) & tensor(I) 
                 )
               + nuEffa*fvc::grad(Ua)
-              //- I*nuEffa*tr(gradUaT); 
-              - ((2.0/3.0)*I)*nuEffa*tr(gradUaT);
+              - I*nuEffa*tr(gradUaT); 
+              //- ((2.0/3.0)*I)*nuEffa*tr(gradUaT);
     }
 
     surfaceScalarField phiRa =
