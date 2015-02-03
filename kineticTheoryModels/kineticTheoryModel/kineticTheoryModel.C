@@ -658,8 +658,12 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      mua_.min(1.e+02);
      mua_.max(0.0);
 	
-    // Limit shear stress
+     // Limit shear stress
      tau_ = mua_ * gammaDot * hatS;
+     
+     // Divide by alpha (to be consistent with OpenFOAM implementation)
+     mua_ /= (fvc::average(alpha_) + scalar(0.001)); // max(alpha_, scalar(constSMALL));
+     tau_ /= (fvc::average(alpha_) + scalar(0.001)); //max(alpha_, scalar(constSMALL));
      
      if(verboseMKT)
      {

@@ -5,8 +5,8 @@
     if (kineticTheory.on() || kineticTheory.PU())
     {
 	kineticTheory.solve(gradUaT);
-	nuEffa = kineticTheory.mua()/rhoa/(fvc::average(alpha) + scalar(0.001)) ;
-    }
+	nuEffa = kineticTheory.mua()/rhoa;
+    }    
     else // If not using kinetic theory is using Ct model
     {
 	nuEffa = sqr(Ct)*nutb + nua;
@@ -26,12 +26,7 @@
     //_AO_09/03/2014 Garzo-Dufty kinetic theory OR modified kinetic theory by Chialvo-Sundaresan
     else if(kineticTheory.PU())
     {
-    	Rca = - ( ( kineticTheory.tau() 
-                   / ( rhoa 
-                      * (fvc::average(alpha) + scalar(0.001)) 
-                     ) 
-                  ) & tensor(I) 
-                )
+    	Rca = -( (kineticTheory.tau()/rhoa) & tensor(I) ) 
               + nuEffa*fvc::grad(Ua)
               - I*nuEffa*tr(gradUaT); 
               //- ((2.0/3.0)*I)*nuEffa*tr(gradUaT);
