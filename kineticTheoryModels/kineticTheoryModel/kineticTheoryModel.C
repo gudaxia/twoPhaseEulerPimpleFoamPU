@@ -248,14 +248,34 @@ Foam::kineticTheoryModel::kineticTheoryModel
     alphaf_(0),
 // Dense intertial regime
     alphac_(0),  
-
 // YG 12/27/2014
     alphad_(0),   
 // Yield stress ratio
     upsilons_(0), 
 // Modified kinetic theory by Chialvo-Sundaresan on/off     
-    mofidiedKineticTheoryPU_(kineticTheoryProperties_.lookup("modifiedKineticTheoryPU"))        
-{}
+    mofidiedKineticTheoryPU_(kineticTheoryProperties_.lookup("modifiedKineticTheoryPU")),
+//
+    //-AO, YG - Decompose particle pressure, Sundar's idea
+    decomposePp_(false),
+    paStar_
+    (
+        IOobject
+        (
+            "paStar",
+            Ua_.time().timeName(),
+            Ua_.mesh(),
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        Ua_.mesh(),
+        dimensionedScalar("zero", dimensionSet(1, -1, -2, 0, 0), 0.0)
+    )    	            
+{
+    if(kineticTheoryProperties_.found("decomposePp"))
+    {
+            decomposePp_ = true;
+    }       
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -506,6 +526,8 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 	diluteCorrection = true;
         Info << "Modified kinetic theory model - Only dilute correction " << endl;
      }   
+     
+     if(decomposePp_) Info << "Decompose Pp into Pp - PpStar " << endl;
 
      bool verboseMKT(false);
      if(kineticTheoryProperties_.found("verboseMKT")) verboseMKT = true;
@@ -604,7 +626,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      Theta_.max(1.0e-15);
      Theta_.min(1.0e+3);
 
-     // Parrticle pressure
+     // Particle pressure
      pa_ = PsCoeff * Theta_;
 
      // Psi Eq.32, p.12
@@ -668,7 +690,15 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      if(verboseMKT)
      {
      	#include "verboseMKT.H"
-     }    
+     }  
+
+     //-AO, YG - Decompose particle pressure, Sundar's idea     
+     if(decomposePp_)
+     {
+     	pa_ /= (fvc::average(alpha_) + scalar(0.001));
+	//pa_.correctBoundaryConditions();
+	pa_.max(1.0e-15);	  	  
+     }  
 
  }
  else

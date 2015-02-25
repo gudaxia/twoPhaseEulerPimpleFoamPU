@@ -1,4 +1,9 @@
 {
+    Info<< "In alphaEqn, dispersed phase velocities = "
+        << "  Min(Ua) = " << min(Ua).value()
+        << "  Max(Ua) = " << max(Ua).value()
+        << endl;
+
     word scheme("div(phi,alpha)");
     word schemer("div(phir,alpha)");
 

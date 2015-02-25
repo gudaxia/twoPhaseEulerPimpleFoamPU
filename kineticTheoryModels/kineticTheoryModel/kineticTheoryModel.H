@@ -158,7 +158,13 @@ class kineticTheoryModel
         mutable scalar upsilons_;
 	
         //_AO_09/30/2014 - use modified kinetic theory by Chialvo-Sundaresan
-        Switch mofidiedKineticTheoryPU_;	
+        Switch mofidiedKineticTheoryPU_;
+	
+        //-AO, YG - Decompose particle pressure, Sundar's idea
+        Switch decomposePp_;
+
+        //-AO, YG - Decompose particle pressure, Sundar's idea
+        volScalarField paStar_;			
 
     // Private Member Functions
 
@@ -219,6 +225,12 @@ public:
         bool PU() const
         {
             return mofidiedKineticTheoryPU_;
+        }
+
+        //-AO, YG - Decompose particle pressure, Sundar's idea
+        bool decomposePp() const
+        {
+            return decomposePp_;
         }
 	
 	//_AO_09/02/2014_
@@ -319,10 +331,41 @@ public:
 	  Info<< "kinTheory: min(ppMagf) = " << min(ppMagf_).value()
 	      << ", max(ppMagf) = "          << max(ppMagf_).value() << endl;         
 
+	if(decomposePp_)
+	{
+		 // particle pressure star 
+		 volScalarField PsCoeffStar	// -> rho_p * H 
+		 (
+        	     granularPressureModel_->granularPressureCoeff
+        	     (
+        		 alpha_,
+        		 gs0_,
+        		 rhoa_,
+        		 e_
+        	     )
+		 );    
+
+		 PsCoeffStar.max(1.0e-15);
+
+		 // Particle pressure star
+        	 paStar_ = PsCoeffStar * Theta_;
+
+		 //paStar_ /= (fvc::average(alpha_) + scalar(0.001));
+        	 paStar_ /= (alpha_ + scalar(0.001));
+		 //paStar_.correctBoundaryConditions();
+		 paStar_.max(1.0e-15);	  
+
+		 Info<< "kinTheory: min(ppStar) = " << min(paStar_).value()
+		     << ", max(ppStar) = "          << max(paStar_).value() << endl;  
+	}
+
 	  return ppMagf_;
 	}
 		
-	
+        const volScalarField& paStar() const
+        {
+            return paStar_;
+        }	
 };
 
 
