@@ -591,6 +591,8 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      lambda_ = viscDim * 384.0 / ( 25.0 * Pi ) * ( 1.0 + e_ ) * alpha_ * alpha_ * gs0_ ;  
      //lambda_ = (4.0/3.0)*sqr(alpha_)*rhoa_*da_*gs0_*(1.0+e_)*sqrt(Theta_)/sqrtPi;
      
+     volScalarField ratioBulkShearVisc(lambda_/mua_);
+     
      // J Eq.5, p3     
      volScalarField J_( 5.0 * sqrtPi / 96.0 * ( mua_ + lambda_ ) / viscDim ); // Dimension issue 
 
@@ -679,6 +681,9 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      // Limit mua
      mua_.min(1.e+02);
      mua_.max(0.0);
+     
+     // Limit lambda
+     lambda_ = mua_ * ratioBulkShearVisc;
 	
      // Limit shear stress
      tau_ = mua_ * gammaDot * hatS;
@@ -686,7 +691,8 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      // Divide by alpha (to be consistent with OpenFOAM implementation)
      mua_ /= (fvc::average(alpha_) + scalar(0.001)); // max(alpha_, scalar(constSMALL));
      tau_ /= (fvc::average(alpha_) + scalar(0.001)); // max(alpha_, scalar(constSMALL));
-     
+     lambda_ /= (fvc::average(alpha_) + scalar(0.001)); // max(alpha_, scalar(constSMALL));
+          
      if(verboseMKT)
      {
      	#include "verboseMKT.H"
