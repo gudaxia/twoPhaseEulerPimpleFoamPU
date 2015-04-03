@@ -28,7 +28,8 @@
     {
     	Rca = -( (kineticTheory.tau()/rhoa) & I ) 
               + nuEffa*fvc::grad(Ua)
-              - I*nuEffa*tr(gradUaT); 
+              -I*(kineticTheory.lambda()/rhoa)*tr(gradUaT);  
+	      //- I*nuEffa*tr(gradUaT); 
               //- ((2.0/3.0)*I)*nuEffa*tr(gradUaT);
 	if(kineticTheory.decomposePp())
 	{
