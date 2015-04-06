@@ -28,7 +28,8 @@
     {
     	Rca = -( (kineticTheory.tau()/rhoa) & I ) 
               + nuEffa*fvc::grad(Ua)
-              - I*nuEffa*tr(gradUaT); 
+              -I*(kineticTheory.lambda()/rhoa)*tr(gradUaT);  
+	      //- I*nuEffa*tr(gradUaT); 
               //- ((2.0/3.0)*I)*nuEffa*tr(gradUaT);
 	if(kineticTheory.decomposePp())
 	{
@@ -109,55 +110,8 @@
         UaEqn().relax();
 	UbEqn().relax();
     }
-
-    volScalarField rAUa(1.0/UaEqn().A());
-    surfaceScalarField rAUaf("rAUaf", fvc::interpolate(rAUa));
-    //rAUaf = fvc::interpolate(rAUa);	
-
-    volScalarField rAUb(1.0/UbEqn().A());
-    surfaceScalarField rAUbf("rAUbf", fvc::interpolate(rAUb));
-
-    surfaceScalarField phiaSources
-    (
-       rAUaf*(g & mesh.Sf())
-     - rAUaf*(ppMagfUEqn*fvc::snGrad(alpha)*mesh.magSf())
-     - rAUaf*fvc::snGrad(kineticTheory.pa()/rhoa)*mesh.magSf()
-     +(fvc::interpolate(rAUa*beta/rhoa*K)*phib)
-    );
-
-    surfaceScalarField phibSources
-    (
-       rAUbf*(g & mesh.Sf())
-     +(fvc::interpolate(rAUb*alpha/rhob*K)*phia)
-    );
     
     // Solving momentum predictor using flux reconstruction
-    if (momentumPredictor)
-    {
-	solve
-	(
-	    UaEqn() 
-	 == 
-	    fvc::reconstruct
-	    (
-        	phiaSources/rAUaf - fvc::snGrad(p)*mesh.magSf()/rhoa	      
-	    ),
-       	    mesh.solver(Ua.select(finalIter))  // Selecting linear solver settings 
-	);
-	
-	solve
-	(
-	    UbEqn() 
-	 == 
-	    fvc::reconstruct
-	    (
-       		phibSources/rAUbf - fvc::snGrad(p)*mesh.magSf()/rhob
-	    ),
-	    mesh.solver(Ub.select(finalIter)) // Selecting linear solver settings 
-	);
-    }
-    
-/*     // Solving momentum predictor using flux reconstruction
     if (momentumPredictor)
     {
 	solve
@@ -170,7 +124,6 @@
 	      - fvc::snGrad(p)*mesh.magSf()/rhoa
 	      - ppMagfUEqn*fvc::snGrad(alpha)*mesh.magSf()
 	      + fvc::interpolate(beta/rhoa*K)*phib 
-	      //- fvc::snGrad(kineticTheory.pa()/rhoa)*mesh.magSf()
 	    ),
        	    mesh.solver(Ua.select(finalIter))  // Selecting linear solver settings 
 	);
@@ -187,4 +140,4 @@
 	    ),
 	    mesh.solver(Ub.select(finalIter)) // Selecting linear solver settings 
 	);
-    } */
+    }

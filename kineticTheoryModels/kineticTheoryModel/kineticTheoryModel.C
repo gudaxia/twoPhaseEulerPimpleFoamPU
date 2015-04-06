@@ -445,6 +445,13 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 
     // add frictional stress
      mua_ += muf;
+     
+//-AO Inconsistency of equations	
+     const scalar constSMALL = 0.001; //1.e-06;
+     mua_ /= (fvc::average(alpha_) + scalar(constSMALL));
+     lambda_ /= (fvc::average(alpha_) + scalar(constSMALL)); 
+//-AO	
+     
      mua_.min(1.0e+2);
      mua_.max(0.0);
 
@@ -457,6 +464,8 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 
      Info<< "kinTheory: min(pa) = " << min(pa_).value()
          << ", max(pa) = " << max(pa_).value() << endl;
+	 
+ 
  //}
 
  /*
@@ -526,7 +535,17 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 	diluteCorrection = true;
         Info << "Modified kinetic theory model - Only dilute correction " << endl;
      }   
+
+     bool denseCorrection(false);          
+     if(kineticTheoryProperties_.found("denseCorrection")) 
+     {
+	testMKTimp = false;
+	diluteCorrection = false;
+	denseCorrection = true;
+        Info << "Modified kinetic theory model - Only dense correction " << endl;
+     }   
      
+          
      if(decomposePp_) Info << "Decompose Pp into Pp - PpStar " << endl;
 
      bool verboseMKT(false);
@@ -534,7 +553,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
  
      const scalar Pi = constant::mathematical::pi;
      const scalar sqrtPi = sqrt(constant::mathematical::pi);
-     const scalar constSMALL = 1.e-06;
+     const scalar constSMALL = 1.e-03; //1.e-06;
 
      // Read from dictionary
      muFric_ = readScalar(kineticTheoryProperties_.lookup("muFriction"));
@@ -622,7 +641,9 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
 
      // Theta
      Theta_ = max(ThetaDil_,ThetaDense_) ;
+
      if(testMKTimp || diluteCorrection) Theta_ = ThetaDil_;
+     if(testMKTimp || denseCorrection) Theta_ = ThetaDense_;
      
      // Limit granular temperature
      Theta_.max(1.0e-15);
@@ -678,6 +699,15 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      // Viscosity
      mua_ = ( pa_ * upsilon_ ) / (max( gammaDot, gammaDotSmall )) ; 	
 
+     // Divide by alpha (to be consistent with OpenFOAM implementation)
+/*      mua_ /= (fvc::average(alpha_) + scalar(0.001));
+     tau_ /= (fvc::average(alpha_) + scalar(0.001)); 
+     lambda_ /= (fvc::average(alpha_) + scalar(0.001)); */ 
+
+     mua_ /= max(alpha_, scalar(constSMALL));
+     tau_ /= max(alpha_, scalar(constSMALL));
+     lambda_ /= max(alpha_, scalar(constSMALL));
+
      // Limit mua
      mua_.min(1.e+02);
      mua_.max(0.0);
@@ -688,10 +718,9 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      // Limit shear stress
      tau_ = mua_ * gammaDot * hatS;
      
-     // Divide by alpha (to be consistent with OpenFOAM implementation)
-     mua_ /= (fvc::average(alpha_) + scalar(0.001)); // max(alpha_, scalar(constSMALL));
-     tau_ /= (fvc::average(alpha_) + scalar(0.001)); // max(alpha_, scalar(constSMALL));
-     lambda_ /= (fvc::average(alpha_) + scalar(0.001)); // max(alpha_, scalar(constSMALL));
+     //mua_ /= max(alpha_, scalar(constSMALL));
+     //tau_ /= max(alpha_, scalar(constSMALL));
+     //lambda_ /= max(alpha_, scalar(constSMALL));
           
      if(verboseMKT)
      {
