@@ -162,6 +162,10 @@ class kineticTheoryModel
 	
         //-AO, YG - Decompose particle pressure, Sundar's idea
         Switch decomposePp_;
+	
+	
+	//-AO, YG - Berzi Model using SKT
+	Switch Berzi_;
 
         //-AO, YG - Decompose particle pressure, Sundar's idea
         volScalarField paStar_;			
@@ -231,6 +235,12 @@ public:
         bool decomposePp() const
         {
             return decomposePp_;
+        }
+	
+	
+	bool Berzi() const
+        {
+            return Berzi_;
         }
 	
 	//_AO_09/02/2014_
@@ -316,6 +326,9 @@ public:
 	  );  
 
 	  // NOTE: this might not be appropriate if J&J model is used (verify)
+	  
+
+
 	  forAll(alpha, cellI)
 	  {
 	      if(alpha[cellI] >= alphaMinFriction_.value())
@@ -323,6 +336,7 @@ public:
 		  ppMagf_[cellI] = ppMagf_[cellI] + ppMagfFriction[cellI];
 	      }
 	  }
+
 
 	 // ppMagf_.relax();
 	  

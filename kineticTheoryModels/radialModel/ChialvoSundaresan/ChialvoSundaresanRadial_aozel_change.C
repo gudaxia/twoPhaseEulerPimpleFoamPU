@@ -97,47 +97,50 @@ Foam::tmp<Foam::volScalarField> Foam::ChialvoSundaresanRadial::g0jamming
 {
     //AO_09/02/2014 Eq. 31, p. 10
     const scalar alpha2 = 0.58;
-    scalar alphastar = alpha_c - alpha_f;//alpha_f is alphad_ here.
- //   scalar alphastar = 0.6;
- //   volScalarField valg0(alpha);
- /*   
-    forAll(mesh.cells(),ii)
+    scalar alphastar = alpha_c - alpha_f;	//alpha_f is alphad_ here.
+
+    tmp<volScalarField> g0tmp
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                "g0tmp",
+                mesh.time().timeName(),
+                mesh
+            ),
+            mesh,
+            dimensionedScalar("g0tmp", dimensionSet(0, 0, 0, 0, 0), 1.e3)
+        )
+    );
+
+    volScalarField& g0tmpVal = g0tmp();
+
+    forAll(mesh.cells(), cellI)
     {
-	if( alpha[ii] <= alphastar )
-	{
-	   valg0[ii] =   (1.0 - alpha[ii]/2.) / (pow(1.0 - alpha[ii], 3)) + alpha2 * alpha[ii] * alpha[ii] / pow( alpha_c - alpha[ii] , 1.5);
+        if ( alpha[cellI] > alphastar )
+        {
+		g0tmpVal[cellI] = (1.0 - 0.5*alphastar)/(pow(1-alphastar,3.)) 
+        		         +(alpha2*alphastar*alphastar/(pow(alpha_c-alphastar,1.5)))
+			         +(-0.5/(pow(1.0-alphastar,3.)) 
+				   +3.0*(1.0-0.5*alphastar)/(pow(1.0-alphastar,4.)) 
+				   +2.*alpha2*alphastar/(pow(alpha_c-alphastar,3./2.))
+				   +1.5*alpha2*alphastar*alphastar/(pow(alpha_c-alphastar,2.5))) 
+				   *(alpha[cellI]-alphastar);					              	
 	}else
 	{
-	   valg0[ii] =   (1.0 - alpha[ii]/2.) / (pow(1.0 - alpha[ii], 3)) +
-
-
-	               alpha2 * alphastar * alphastar / pow( alpha_c - alphastar , 1.5) ;
-	//		  + (- 1.0 / ( 2.0 * pow(1.0 - alphastar, 3))
- //   + 3.0 * ( 1.0 - alphastar/2.) / (pow(1.0 - alphastar, 4)) + 2.0 * alpha2 * alphastar / pow( alpha_c - alphastar ,1.5)
-   // + 3.0 / 2.0 * alpha2 * alphastar * alphastar / pow( alpha_c - alphastar, 2.5))*(alpha[ii]-alphastar);  
-	}
+		g0tmpVal[cellI] = (1.0 - 0.5*alpha[cellI])/(pow(1-alpha[cellI],3.)) 
+        		         +(alpha2*alpha[cellI]*alpha[cellI]/(pow(alpha_c-alpha[cellI],1.5)));		
+	}					
     }
-*/    
     
     
-//    volScalarField valg0CS;
-  //  volScalarField valg0SS;
-   // /if (alpha[1] < alphastar) {
-    // valg0CS = (1.0 - alpha/2.) / (pow(1.0 - alpha, 3));
-//     valg0SS = (1.0 - alpha/2.) / (pow(1.0 - alpha, 3));}
-  //  else {
-  //   valg0CS = (1.0 - alpha/2.) / (pow(1.0 - alpha, 3));
-   //  valg0SS = alpha2 * alphastar * alphastar / pow( alpha_c - alphastar , 1.5) + (- 1.0 / ( 2.0 * pow(1.0 - alphastar, 3))
-  //  + 3.0 * ( 1.0 - alphastar/2.) / (pow(1.0 - alphastar, 4)) + 2.0 * alpha2 * alphastar / pow( alpha_c - alphastar ,1.5)
-  //  + 3.0 / 2.0 * alpha2 * alphastar * alphastar / pow( alpha_c - alphastar, 2.5));}
-
-
-    return  
-    	(1.0 - min(alphastar,alpha)/2.) / (pow(1.0 - min(alphastar,alpha), 3.)) 
-		     + alpha2 * min(alphastar,alpha) * min(alphastar,alpha) / pow( alpha_c - min(alphastar,alpha) , 1.5) 		    
-		    + (- 1.0 / ( 2.0 * pow(1.0 - alphastar, 3.))
-    + 3.0 * ( 1.0 - alphastar/2.) / (pow(1.0 - alphastar, 4)) + 2.0 * alpha2 * alphastar / pow( alpha_c - alphastar ,1.5)
-   + 3.0 / 2.0 * alpha2 * alphastar * alphastar / pow( alpha_c - alphastar, 2.5))*max(alpha-alphastar,0.0);
+    return  g0tmp;
+//		    
+//         (1.0 - 0.5 * min(alpha,alphastar))/pow(1-min(alpha,alphastar),3.0) + alpha2*pow(min(alpha,alphastar),2.0)/pow(alpha_c-min(alpha,alphastar),1.5)   
+//		    + (- 1.0 / ( 2.0 * pow(1.0 - alphastar, 3.))
+//    + 3.0 * ( 1.0 - alphastar/2.) / (pow(1.0 - alphastar, 4)) + 2.0 * alpha2 * alphastar / pow( alpha_c - alphastar ,1.5)
+//   + 3.0 / 2.0 * alpha2 * alphastar * alphastar / pow( alpha_c - alphastar, 2.5))*max(alpha-alphastar,0.0);
 
 }
 
@@ -152,16 +155,57 @@ Foam::tmp<Foam::volScalarField> Foam::ChialvoSundaresanRadial::g0jammingPrime
 {
     //AO_09/02/2014 Eq. 31, p. 10
     const scalar alpha2 = 0.58;
-    scalar alphastar = alpha_c - alpha_f;//alpha_f is alphad_ here.
+    scalar alphastar = alpha_c - alpha_f;	//alpha_f is alphad_ here.
+
+    tmp<volScalarField> g0tmpPrime
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                "g0tmpPrime",
+                mesh.time().timeName(),
+                mesh
+            ),
+            mesh,
+            dimensionedScalar("g0tmpPrime", dimensionSet(0, 0, 0, 0, 0), 1.e4)
+        )
+    );
+
+    volScalarField& g0tmpPrimeVal = g0tmpPrime();
+
+    forAll(mesh.cells(), cellI)
+    {
+        if ( alpha[cellI] > alphastar )
+        {
+		g0tmpPrimeVal[cellI] =  -0.5/(pow(1.0-alphastar,3.)) 
+				        +3.0*(1.0-0.5*alphastar)/(pow(1.0-alphastar,4.)) 
+				        +2.*alpha2*alphastar/(pow(alpha_c-alphastar,3./2.))
+				        +1.5*alpha2*alphastar*alphastar/(pow(alpha_c-alphastar,2.5));					              	
+	}else
+	{
+		g0tmpPrimeVal[cellI] =  -0.5/(pow(1.0-alpha[cellI],3.)) 
+				        +3.0*(1.0-0.5*alpha[cellI])/(pow(1.0-alpha[cellI],4.)) 
+				        +2.*alpha2*alpha[cellI]/(pow(alpha_c-alpha[cellI],3./2.))
+				        +1.5*alpha2*alpha[cellI]*alpha[cellI]/(pow(alpha_c-alpha[cellI],2.5)); 		
+	}					
+    }
     
-    volScalarField valg0CSprime = 
-    - 1.0 / ( 2.0 * pow(1.0 - min(alphastar,alpha), 3))
-    + 3.0 * ( 1.0 - min(alphastar,alpha)/2.) / (pow(1.0 - min(alphastar,alpha), 4));
     
-    return  
-    	valg0CSprime  
-    + 2.0 * alpha2 * min(alphastar,alpha) / pow( alpha_c - min(alphastar,alpha) ,1.5)
-    + 3.0 / 2.0 * alpha2 * min(alphastar,alpha) * min(alphastar,alpha) / pow( alpha_c - min(alphastar,alpha), 2.5);
+    return  g0tmpPrime;
+	
+	    //AO_09/02/2014 Eq. 31, p. 10
+//    const scalar alpha2 = 0.58;
+//    scalar alphastar = alpha_c - alpha_f;//alpha_f is alphad_ here.
+    
+//    volScalarField valg0CSprime = 
+//    - 1.0 / ( 2.0 * pow(1.0 - min(alphastar,alpha), 3))
+//    + 3.0 * ( 1.0 - min(alphastar,alpha)/2.) / (pow(1.0 - min(alphastar,alpha), 4));
+    
+//    return  
+//    	valg0CSprime  
+//    + 2.0 * alpha2 * min(alphastar,alpha) / pow( alpha_c - min(alphastar,alpha) ,1.5)
+//    + 3.0 / 2.0 * alpha2 * min(alphastar,alpha) * min(alphastar,alpha) / pow( alpha_c - min(alphastar,alpha), 2.5);
 
 }
 

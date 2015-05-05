@@ -576,7 +576,7 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
  
      const scalar Pi = constant::mathematical::pi;
      const scalar sqrtPi = sqrt(constant::mathematical::pi);
-     const scalar constSMALL = 1.e-06; //1.e-06; 1.e-03;
+     const scalar constSMALL = 1.e-03; //1.e-06; 1.e-03;
 
      // Read from dictionary
      muFric_ = readScalar(kineticTheoryProperties_.lookup("muFriction"));
@@ -603,7 +603,8 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
       Ua_.mesh(),
      //max(alpha, scalar(constSMALL)),
       min(max(alpha_, scalar(constSMALL)),alphaMax_ - 0.01),  //changed by YG
-          alphaMax_,
+    //  min(max(alpha_, scalar(constSMALL)),alphac_ + 0.02),
+      alphaMax_,
       alphad_,  ///changed by YG
       alphac_ 
      );
@@ -657,14 +658,14 @@ void Foam::kineticTheoryModel::solve(const volTensorField& gradUat)
      dimensionedScalar gammaDotSmall("gammaDotSmall",dimensionSet(0 , 0 , -1 , 0 , 0, 0, 0), constSMALL);    
 
      // Dilute inertia temperature Eq.24, p8    
-     volScalarField ThetaDil_ = ( J_ / max ( Kmod_ , 1e-1 ) ) * ( gammaDot * da_ ) * ( gammaDot * da_ );
+     volScalarField ThetaDil_ = ( J_ / max ( Kmod_ , 1.0e-3 ) ) * ( gammaDot * da_ ) * ( gammaDot * da_ );
 
      // Dense inertia temperature Eq.27, p8    
 //     volScalarField ThetaDense_ =   const_alpha1 * ( gammaDot * da_ ) * ( gammaDot * da_ )
   //                               / sqrt( max(alphac_ - alpha_, constSMALL) ); 
 volScalarField ThetaDense_ =   const_alpha1 * ( gammaDot * da_ ) * ( gammaDot * da_ )
                                   / sqrt( max(alphac_ - alpha_, alphad_) ) 
-				  + max(alpha_ - (alphac_ - alphad_),0.0) * 0.5 *const_alpha1*( gammaDot * da_ ) * ( gammaDot * da_)*pow(alphad_,-1.5); 
+						  + max(alpha_ - (alphac_ - alphad_),0.0) * 0.5 *const_alpha1*( gammaDot * da_ ) * ( gammaDot * da_)*pow(alphad_,-1.5); 
      
 				  
      // Theta
@@ -695,18 +696,8 @@ volScalarField ThetaDense_ =   const_alpha1 * ( gammaDot * da_ ) * ( gammaDot * 
       pa_  = pa_ + pf;
 	*/
 //	pa_ =pa_ + dimensionedScalar("1e24", dimensionSet(1, -1, -2, 0, 0), Fr_.value())*pow(max(alpha_ - (alphaMinFriction_), scalar(0)), 2/3);
-			pa_ =pa_ + dimensionedScalar("5810", dimensionSet(1, 0, -2, 0, 0), 581.0)/da_*pow(max(alpha_ - (alphaMinFriction_-0.0), scalar(0)), 2.0/3.0);
-//	pa_ =pa_ + dimensionedScalar("4.7e9", dimensionSet(1, -1, -2, 0, 0), 4.7e9)*pow(max(alpha_ - (alphaMinFriction_-0.0), scalar(0)), 1.56);
-			
-			
- // forAll(alpha_, cellI)
-  //   {
-//	 if(alpha_[cellI] >= (alphaMinFriction_.value()-0.00001))
-//	 {
-//	     pa_[cellI] = pa_[cellI] + 581.0/da_.value()*pow(alpha_[cellI] - (alphaMinFriction_.value()-0.00001), 2.0/3.0);
-//	 }
-  //   }
-
+		//	pa_ =pa_ + dimensionedScalar("5810", dimensionSet(1, 0, -2, 0, 0), 5810)/da_*pow(max(alpha_ - (alphaMinFriction_-0.0), scalar(0)), 2/3);
+	pa_ =pa_ + dimensionedScalar("4.7e9", dimensionSet(1, 0, -2, 0, 0), 4.7e9)*pow(max(alpha_ - (alphaMinFriction_-0.0), scalar(0)), 1.56);
       
       }
      // Psi Eq.32, p.12
